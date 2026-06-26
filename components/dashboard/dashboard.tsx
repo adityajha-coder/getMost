@@ -220,58 +220,59 @@ export function Dashboard({ result }: { result: AnalysisResult }) {
             github.found && leetcode.found ? "md:grid-cols-2" : "md:grid-cols-1"
           )}>
             {github.found ? (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                    <GithubMark className="size-4" /> GitHub
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-3 gap-3">
-                    <Stat label="Repos" value={github.publicRepos} />
-                    <Stat label="Stars" value={github.totalStars} />
-                    <Stat label="Followers" value={github.followers} />
+              <div className="rounded-2xl border border-border/80 bg-card/45 p-6 shadow-sm">
+                <div className="flex items-center gap-2 border-b border-border/40 pb-4 mb-5">
+                  <GithubMark className="size-5 text-foreground/85" />
+                  <h3 className="text-base font-bold text-foreground">GitHub Signals</h3>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3.5">
+                  <Stat label="Public Repos" value={github.publicRepos} />
+                  <Stat label="Total Stars" value={github.totalStars} />
+                  <Stat label="Followers" value={github.followers} />
+                  <Stat label="Docs Score" value={`${github.documentationScore}/100`} />
+                  <Stat label="Original Work" value={`${Math.round(github.originalRepoRatio * 100)}%`} />
+                  <Stat label="Test Coverage" value={github.reposWithTests > 0 ? `${Math.round((github.reposWithTests / Math.max(github.publicRepos, 1)) * 100)}%` : "0%"} />
+                </div>
+                <div className="mt-6 border-t border-border/40 pt-5">
+                  <p className="mb-3 text-[10px] font-bold text-foreground/60 uppercase tracking-wider">Top Languages</p>
+                  <div className="flex flex-col gap-2.5">
+                    {github.topLanguages.slice(0, 5).map((l) => (
+                      <div key={l.language} className="flex items-center gap-3">
+                        <span className="w-20 shrink-0 truncate text-sm text-foreground font-semibold">{l.language}</span>
+                        <Progress value={l.percentage} className="h-1.5" />
+                        <span className="w-8 shrink-0 text-right text-xs font-semibold tabular-nums text-muted-foreground">
+                          {l.percentage}%
+                        </span>
+                      </div>
+                    ))}
                   </div>
-                  <div className="mt-5">
-                    <p className="mb-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Top Languages</p>
-                    <div className="flex flex-col gap-2">
-                      {github.topLanguages.slice(0, 5).map((l) => (
-                        <div key={l.language} className="flex items-center gap-3">
-                          <span className="w-20 shrink-0 truncate text-sm text-foreground">{l.language}</span>
-                          <Progress value={l.percentage} className="h-1" />
-                          <span className="w-8 shrink-0 text-right text-xs tabular-nums text-muted-foreground">
-                            {l.percentage}%
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             ) : null}
 
             {leetcode.found ? (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                    <Code2 className="size-4" /> LeetCode
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 gap-3">
-                    <Stat label="Total Solved" value={leetcode.totalSolved} />
-                    <Stat
-                      label="Global Rank"
-                      value={leetcode.ranking ? `#${leetcode.ranking.toLocaleString()}` : "—"}
-                    />
-                  </div>
-                  <div className="mt-5 grid grid-cols-3 gap-3">
+              <div className="rounded-2xl border border-border/80 bg-card/45 p-6 shadow-sm">
+                <div className="flex items-center gap-2 border-b border-border/40 pb-4 mb-5">
+                  <Code2 className="size-5 text-foreground/85" />
+                  <h3 className="text-base font-bold text-foreground">LeetCode Signals</h3>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3.5">
+                  <Stat label="Total Solved" value={leetcode.totalSolved} />
+                  <Stat label="Global Rank" value={leetcode.ranking ? `#${leetcode.ranking.toLocaleString()}` : "—"} />
+                  <Stat label="Acceptance Rate" value={leetcode.acceptanceRate ? `${leetcode.acceptanceRate}%` : "—"} />
+                  <Stat label="Contest Rating" value={leetcode.contestRating !== null ? leetcode.contestRating : "—"} />
+                  <Stat label="Contests Attended" value={leetcode.contestsAttended} />
+                  <Stat label="M+H Difficulty Ratio" value={leetcode.totalSolved > 0 ? `${Math.round((leetcode.mediumSolved + leetcode.hardSolved) / leetcode.totalSolved * 100)}%` : "0%"} />
+                </div>
+                <div className="mt-6 border-t border-border/40 pt-5">
+                  <p className="mb-3 text-[10px] font-bold text-foreground/60 uppercase tracking-wider">Difficulty Breakdown</p>
+                  <div className="grid grid-cols-3 gap-3">
                     <DiffStat label="Easy" solved={leetcode.easySolved} total={leetcode.totalAvailable.easy} tone="text-primary" />
                     <DiffStat label="Medium" solved={leetcode.mediumSolved} total={leetcode.totalAvailable.medium} tone="text-[var(--color-warning)]" />
                     <DiffStat label="Hard" solved={leetcode.hardSolved} total={leetcode.totalAvailable.hard} tone="text-destructive" />
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             ) : null}
           </div>
         </div>
