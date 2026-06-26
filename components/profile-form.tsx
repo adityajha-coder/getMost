@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Code2, ArrowRight, Loader2, AlertCircle } from "lucide-react"
+import { Code2, Loader2, AlertCircle } from "lucide-react"
 import { GithubMark } from "@/components/brand-icons"
 import { ROLE_LIST, SENIORITIES } from "@/lib/roles"
 import type { RoleId, SeniorityId } from "@/lib/types"
@@ -138,10 +138,7 @@ export function ProfileForm() {
               Analyzing profiles…
             </>
           ) : (
-            <>
-              Analyze readiness
-              <ArrowRight className="size-4" />
-            </>
+            "Analyze readiness"
           )}
         </Button>
 

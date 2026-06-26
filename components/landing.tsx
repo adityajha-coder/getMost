@@ -1,6 +1,5 @@
 "use client"
 
-import { GitBranch, Target, TrendingUp } from "lucide-react"
 import { ProfileForm } from "./profile-form"
 
 export function Landing() {
@@ -16,26 +15,20 @@ export function Landing() {
             engineering role, and shows you exactly how ready you are — and what to fix next.
           </p>
 
-          <div className="mt-8 space-y-4">
-            <div className="flex items-center gap-3">
-              <span className="flex size-6 items-center justify-center rounded bg-primary/10 text-primary">
-                <GitBranch className="size-3.5" />
-              </span>
-              <span className="text-sm text-muted-foreground font-medium">Live GitHub & LeetCode profile analysis</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="flex size-6 items-center justify-center rounded bg-primary/10 text-primary">
-                <Target className="size-3.5" />
-              </span>
-              <span className="text-sm text-muted-foreground font-medium">Accurate scoring against 7 core engineering roles</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="flex size-6 items-center justify-center rounded bg-primary/10 text-primary">
-                <TrendingUp className="size-3.5" />
-              </span>
-              <span className="text-sm text-muted-foreground font-medium">Actionable AI-powered improvement roadmap</span>
-            </div>
-          </div>
+          <ul className="mt-8 space-y-3.5 list-none pl-0">
+            <li className="flex items-center gap-3 text-sm text-muted-foreground font-medium">
+              <span className="text-primary font-bold select-none">—</span>
+              Live GitHub & LeetCode profile analysis
+            </li>
+            <li className="flex items-center gap-3 text-sm text-muted-foreground font-medium">
+              <span className="text-primary font-bold select-none">—</span>
+              Accurate scoring against 7 core engineering roles
+            </li>
+            <li className="flex items-center gap-3 text-sm text-muted-foreground font-medium">
+              <span className="text-primary font-bold select-none">—</span>
+              Actionable AI-powered improvement roadmap
+            </li>
+          </ul>
         </div>
 
         <div className="lg:pl-4">
