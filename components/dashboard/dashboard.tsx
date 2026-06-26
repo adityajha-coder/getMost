@@ -73,56 +73,106 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 export function Dashboard({ result }: { result: AnalysisResult }) {
   const { github, leetcode } = result
 
+  // Clean up verdict to remove overall score suffix since it is shown on the right
+  const displayVerdict = result.verdict.replace(/\s*—\s*overall\s*\d+\/100\.?\s*$/i, "")
+
+  // Check if summary is structured fallback
+  const isFallbackSummary =
+    result.aiSummary.includes("Code & Projects:") &&
+    result.aiSummary.includes("Problem Solving:")
+
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
 
       {/* ═══════════ SECTION 1 — OVERVIEW ═══════════ */}
       <div className="dash-section">
         {/* Hero: Score + Verdict */}
-        <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between border-b border-border/40 pb-6">
           <div className="flex-1 min-w-0">
-            <div className="flex flex-wrap items-center gap-2 text-sm">
-              <Badge variant="secondary" className="font-semibold text-xs py-0.5">
+            <div className="flex flex-wrap items-center gap-2.5 text-xs font-semibold uppercase tracking-wider text-foreground/60">
+              <Badge variant="outline" className="font-bold text-[10px] tracking-wider py-0 px-2.5 bg-muted text-foreground uppercase border-border/80">
                 {result.roleLabel}
               </Badge>
-              <span className="capitalize text-sm font-medium text-foreground/70">{result.seniority} level</span>
+              <span className="h-1 w-1 rounded-full bg-foreground/30" />
+              <span className="capitalize">{result.seniority} level</span>
             </div>
-            <h1 className="mt-3 text-balance text-2xl font-bold tracking-tight sm:text-3xl text-foreground">
-              {result.verdict}
+            <h1 className="mt-3.5 text-balance text-3xl font-extrabold tracking-tight md:text-4xl text-foreground leading-tight">
+              {displayVerdict}
             </h1>
-            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-foreground/70">
-              {result.aiSummary}
-            </p>
-
-            {/* Profile links as subtle pills */}
-            <div className="mt-5 flex flex-wrap items-center gap-3">
-              {github.found ? (
-                <a
-                  href={`https://github.com/${github.username}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1 text-xs font-medium text-foreground/80 transition-colors hover:bg-muted/80 hover:text-foreground"
-                >
-                  <GithubMark className="size-3.5" /> {github.username}
-                </a>
-              ) : null}
-              {leetcode.found ? (
-                <a
-                  href={`https://leetcode.com/u/${leetcode.username}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1 text-xs font-medium text-foreground/80 transition-colors hover:bg-muted/80 hover:text-foreground"
-                >
-                  <Code2 className="size-3.5" /> {leetcode.username}
-                </a>
-              ) : null}
-            </div>
           </div>
 
-          {/* Inline score gauge — no card wrapper */}
-          <div className="shrink-0 sm:pt-2">
+          {/* Inline score gauge — widget container */}
+          <div className="shrink-0">
             <ReadinessGauge score={result.overallScore} label={result.readinessLabel} />
           </div>
+        </div>
+
+        {/* AI Summary Narrative / Fallback Breakdown */}
+        <div className="mt-6">
+          {isFallbackSummary ? (
+            <div>
+              <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">
+                Key Performance Indicators
+              </h3>
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                {result.pillars.map((p) => {
+                  const pTone = scoreTone(p.score)
+                  return (
+                    <div
+                      key={p.key}
+                      className="rounded-xl border border-border bg-card/60 p-4 shadow-sm hover:border-border/80 transition-colors"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs font-bold text-foreground">
+                          {p.label}
+                        </span>
+                        <span className={cn("text-xs font-bold tabular-nums", pTone)}>
+                          {p.score}/100
+                        </span>
+                      </div>
+                      <p className="text-xs leading-relaxed text-foreground/90 font-medium">
+                        {p.summary}
+                      </p>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          ) : (
+            <div className="rounded-xl border border-border bg-card/30 p-5 shadow-sm">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-foreground/60 uppercase tracking-wider mb-2.5">
+                <span className="inline-block w-2 h-2 rounded-full bg-primary animate-pulse" />
+                AI Executive Summary
+              </div>
+              <p className="text-sm leading-relaxed text-foreground/90 font-medium font-sans">
+                {result.aiSummary}
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Profile links as subtle pills */}
+        <div className="mt-5 flex flex-wrap items-center gap-3 border-b border-border/30 pb-6">
+          {github.found ? (
+            <a
+              href={`https://github.com/${github.username}`}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card/85 px-3 py-1 text-xs font-semibold text-foreground/90 transition-all hover:bg-muted hover:text-foreground hover:scale-[1.02] shadow-sm"
+            >
+              <GithubMark className="size-3.5" /> {github.username}
+            </a>
+          ) : null}
+          {leetcode.found ? (
+            <a
+              href={`https://leetcode.com/u/${leetcode.username}`}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card/85 px-3 py-1 text-xs font-semibold text-foreground/90 transition-all hover:bg-muted hover:text-foreground hover:scale-[1.02] shadow-sm"
+            >
+              <Code2 className="size-3.5" /> {leetcode.username}
+            </a>
+          ) : null}
         </div>
 
         {/* Pillar Breakdown + Radar */}
@@ -235,14 +285,12 @@ export function Dashboard({ result }: { result: AnalysisResult }) {
         <div className="grid gap-6 md:grid-cols-2">
           <Card>
             <CardHeader>
-              <CardTitle className="text-sm font-semibold text-foreground">Strengths</CardTitle>
+              <CardTitle className="text-sm font-bold text-foreground">Strengths</CardTitle>
             </CardHeader>
-            <CardContent className="flex flex-col gap-2.5">
+            <CardContent className="flex flex-col gap-3">
               {result.strengths.length ? (
                 result.strengths.map((s, i) => (
-                  <p key={i} className="text-sm leading-relaxed text-foreground/90">
-                    <span className="text-primary font-bold mr-2 select-none">·</span>{s}
-                  </p>
+                  <InsightRow key={i} text={s} isGap={false} />
                 ))
               ) : (
                 <p className="text-sm text-muted-foreground">No standout strengths detected yet.</p>
@@ -252,14 +300,12 @@ export function Dashboard({ result }: { result: AnalysisResult }) {
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-sm font-semibold text-foreground">Gaps to Close</CardTitle>
+              <CardTitle className="text-sm font-bold text-foreground">Gaps to Close</CardTitle>
             </CardHeader>
-            <CardContent className="flex flex-col gap-2.5">
+            <CardContent className="flex flex-col gap-3">
               {result.gaps.length ? (
                 result.gaps.map((g, i) => (
-                  <p key={i} className="text-sm leading-relaxed text-foreground/90">
-                    <span className="text-[var(--color-warning)] font-bold mr-2 select-none">·</span>{g}
-                  </p>
+                  <InsightRow key={i} text={g} isGap={true} />
                 ))
               ) : (
                 <p className="text-sm text-muted-foreground">No major gaps — strong profile.</p>
@@ -505,6 +551,45 @@ function DiffStat({
       <p className="text-xs text-muted-foreground mt-0.5">
         {label}
         {total ? <span className="block opacity-70">of {total}</span> : null}
+      </p>
+    </div>
+  )
+}
+
+/* Component to render an individual strength or gap in a premium structured format */
+function InsightRow({ text, isGap }: { text: string; isGap: boolean }) {
+  // Matches "Pillar Name (Score/100): Details"
+  const match = text.match(/^([^(]+)\s*\((\d+)\/100\):\s*(.*)$/)
+
+  if (!match) {
+    return (
+      <div className="flex gap-2.5 items-start p-3.5 bg-card/40 border border-border/50 rounded-xl hover:border-border/85 hover:shadow-sm transition-all duration-200">
+        <span className={cn("font-bold text-sm shrink-0 leading-none mt-0.5", isGap ? "text-destructive" : "text-primary")}>
+          ·
+        </span>
+        <span className="text-sm text-foreground leading-relaxed font-medium">{text}</span>
+      </div>
+    )
+  }
+
+  const [_, title, scoreStr, details] = match
+  const score = parseInt(scoreStr, 10)
+
+  // Color tone based on score
+  const scoreColor = isGap ? "text-destructive" : "text-primary"
+
+  return (
+    <div className="flex flex-col gap-1.5 p-3.5 bg-card/40 border border-border/50 rounded-xl hover:border-border/85 hover:shadow-sm transition-all duration-200">
+      <div className="flex items-center justify-between">
+        <span className="text-sm font-bold text-foreground tracking-tight">
+          {title.trim()}
+        </span>
+        <span className={cn("text-xs font-bold tabular-nums bg-muted px-2 py-0.5 rounded border border-border/40", scoreColor)}>
+          {score}/100
+        </span>
+      </div>
+      <p className="text-xs leading-relaxed text-foreground/90 font-medium font-sans">
+        {details.trim()}
       </p>
     </div>
   )
