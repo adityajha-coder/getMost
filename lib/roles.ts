@@ -18,6 +18,7 @@ export const ROLES: Record<RoleId, RoleDefinition> = {
     weights: { code: 0.45, dsa: 0.2, consistency: 0.2, impact: 0.15 },
     dsaBaseline: { intern: 50, junior: 100, mid: 180, senior: 280 },
     contestBaseline: { intern: null, junior: 1400, mid: 1550, senior: 1700 },
+    repoBaseline: { intern: 5, junior: 12, mid: 25, senior: 40 },
   },
   backend: {
     id: "backend",
@@ -27,8 +28,9 @@ export const ROLES: Record<RoleId, RoleDefinition> = {
     secondaryLanguages: ["Ruby", "Kotlin", "Scala", "C++"],
     coreTopics: ["api", "backend", "database", "microservices", "rest", "graphql", "server"],
     weights: { code: 0.4, dsa: 0.3, consistency: 0.15, impact: 0.15 },
-    dsaBaseline: { intern: 70, junior: 140, mid: 240, senior: 360 },
+    dsaBaseline: { intern: 80, junior: 160, mid: 260, senior: 400 },
     contestBaseline: { intern: null, junior: 1450, mid: 1600, senior: 1800 },
+    repoBaseline: { intern: 6, junior: 14, mid: 28, senior: 45 },
   },
   fullstack: {
     id: "fullstack",
@@ -40,6 +42,7 @@ export const ROLES: Record<RoleId, RoleDefinition> = {
     weights: { code: 0.42, dsa: 0.26, consistency: 0.17, impact: 0.15 },
     dsaBaseline: { intern: 60, junior: 120, mid: 220, senior: 330 },
     contestBaseline: { intern: null, junior: 1400, mid: 1550, senior: 1700 },
+    repoBaseline: { intern: 6, junior: 14, mid: 26, senior: 42 },
   },
   devops: {
     id: "devops",
@@ -51,6 +54,7 @@ export const ROLES: Record<RoleId, RoleDefinition> = {
     weights: { code: 0.4, dsa: 0.15, consistency: 0.2, impact: 0.25 },
     dsaBaseline: { intern: 30, junior: 70, mid: 140, senior: 220 },
     contestBaseline: { intern: null, junior: null, mid: 1400, senior: 1500 },
+    repoBaseline: { intern: 4, junior: 10, mid: 22, senior: 35 },
   },
   "data-engineer": {
     id: "data-engineer",
@@ -62,6 +66,7 @@ export const ROLES: Record<RoleId, RoleDefinition> = {
     weights: { code: 0.38, dsa: 0.27, consistency: 0.15, impact: 0.2 },
     dsaBaseline: { intern: 50, junior: 110, mid: 200, senior: 300 },
     contestBaseline: { intern: null, junior: 1400, mid: 1550, senior: 1700 },
+    repoBaseline: { intern: 5, junior: 12, mid: 24, senior: 38 },
   },
   "ml-engineer": {
     id: "ml-engineer",
@@ -71,8 +76,9 @@ export const ROLES: Record<RoleId, RoleDefinition> = {
     secondaryLanguages: ["Rust", "Julia", "Scala", "R"],
     coreTopics: ["pytorch", "tensorflow", "ml", "deep-learning", "nlp", "machine-learning", "ai"],
     weights: { code: 0.4, dsa: 0.3, consistency: 0.13, impact: 0.17 },
-    dsaBaseline: { intern: 60, junior: 130, mid: 230, senior: 340 },
+    dsaBaseline: { intern: 70, junior: 150, mid: 250, senior: 370 },
     contestBaseline: { intern: null, junior: 1450, mid: 1600, senior: 1800 },
+    repoBaseline: { intern: 5, junior: 12, mid: 22, senior: 35 },
   },
   mobile: {
     id: "mobile",
@@ -84,6 +90,7 @@ export const ROLES: Record<RoleId, RoleDefinition> = {
     weights: { code: 0.45, dsa: 0.22, consistency: 0.18, impact: 0.15 },
     dsaBaseline: { intern: 45, junior: 100, mid: 190, senior: 280 },
     contestBaseline: { intern: null, junior: 1400, mid: 1500, senior: 1650 },
+    repoBaseline: { intern: 4, junior: 10, mid: 20, senior: 35 },
   },
 }
 

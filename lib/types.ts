@@ -26,6 +26,7 @@ export interface RoleDefinition {
   }
   dsaBaseline: Record<SeniorityId, number>
   contestBaseline: Record<SeniorityId, number | null>
+  repoBaseline: Record<SeniorityId, number>
 }
 
 export interface GitHubSignals {
