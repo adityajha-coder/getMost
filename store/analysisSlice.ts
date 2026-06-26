@@ -44,6 +44,7 @@ const analysisSlice = createSlice({
       state.view = "input"
       state.result = null
       state.error = null
+      state.lastRequest = null
     },
     setView(state, action: PayloadAction<View>) {
       state.view = action.payload

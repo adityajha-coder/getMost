@@ -1,8 +1,9 @@
 "use client"
 
 import { useAppDispatch, useAppSelector } from "@/store/hooks"
-import { resetAnalysis } from "@/store/analysisSlice"
+import { resetAnalysis, setView } from "@/store/analysisSlice"
 import { Button } from "@/components/ui/button"
+import { GithubMark } from "@/components/brand-icons"
 
 export function SiteHeader() {
   const dispatch = useAppDispatch()
@@ -22,21 +23,26 @@ export function SiteHeader() {
           </span>
         </button>
 
-        <nav className="flex items-center gap-1 text-sm">
-          {view === "result" ? (
-            <Button variant="ghost" size="sm" onClick={() => dispatch(resetAnalysis())}>
-              New analysis
-            </Button>
-          ) : (
-            <a
-              href="https://github.com"
-              target="_blank"
-              rel="noreferrer"
-              className="hidden text-muted-foreground transition-colors hover:text-foreground sm:inline-block"
-            >
-              How it works
-            </a>
+        <nav className="flex items-center gap-3 text-sm">
+          {view === "result" && (
+            <>
+              <Button variant="ghost" size="sm" onClick={() => dispatch(setView("input"))}>
+                Edit URLs
+              </Button>
+              <Button variant="ghost" size="sm" onClick={() => dispatch(resetAnalysis())}>
+                New analysis
+              </Button>
+            </>
           )}
+          <a
+            href="https://github.com/adityajha-coder/getMost"
+            target="_blank"
+            rel="noreferrer"
+            className="text-muted-foreground transition-colors hover:text-foreground flex items-center justify-center p-1"
+            aria-label="GitHub Repository"
+          >
+            <GithubMark className="size-5" />
+          </a>
         </nav>
       </div>
     </header>

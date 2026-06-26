@@ -24,10 +24,12 @@ export function ProfileForm() {
   const error = useAppSelector((s) => s.analysis.error)
   const loading = status === "loading"
 
-  const [githubUrl, setGithubUrl] = useState("")
-  const [leetcodeUrl, setLeetcodeUrl] = useState("")
-  const [role, setRole] = useState<RoleId>("fullstack")
-  const [seniority, setSeniority] = useState<SeniorityId>("junior")
+  const lastRequest = useAppSelector((s) => s.analysis.lastRequest)
+
+  const [githubUrl, setGithubUrl] = useState(lastRequest?.githubUrl ?? "")
+  const [leetcodeUrl, setLeetcodeUrl] = useState(lastRequest?.leetcodeUrl ?? "")
+  const [role, setRole] = useState<RoleId>(lastRequest?.role ?? "fullstack")
+  const [seniority, setSeniority] = useState<SeniorityId>(lastRequest?.seniority ?? "junior")
 
   const canSubmit = (githubUrl.trim() || leetcodeUrl.trim()) && !loading
 
