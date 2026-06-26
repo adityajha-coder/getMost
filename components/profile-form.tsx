@@ -49,38 +49,38 @@ export function ProfileForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="rounded-lg border border-border bg-card p-6 shadow-md sm:p-8"
+      className="rounded-2xl border border-border bg-card/75 backdrop-blur-xl p-6 shadow-lg sm:p-8 hover:border-border/80 transition-all duration-300"
     >
-      <div className="grid gap-5">
+      <div className="grid gap-5.5">
         <div className="grid gap-2">
-          <Label htmlFor="github" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          <Label htmlFor="github" className="text-[10px] font-bold uppercase tracking-wider text-foreground/80">
             GitHub profile
           </Label>
           <div className="relative">
-            <GithubMark className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+            <GithubMark className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground/60" />
             <Input
               id="github"
               value={githubUrl}
               onChange={(e) => setGithubUrl(e.target.value)}
               placeholder="github.com/yourusername"
-              className="h-10 pl-9"
+              className="h-11 pl-10 bg-background/80 border-border/80 focus-visible:ring-primary/45 rounded-lg text-sm"
               autoComplete="off"
             />
           </div>
         </div>
 
         <div className="grid gap-2">
-          <Label htmlFor="leetcode" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          <Label htmlFor="leetcode" className="text-[10px] font-bold uppercase tracking-wider text-foreground/80">
             LeetCode profile
           </Label>
           <div className="relative">
-            <Code2 className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+            <Code2 className="absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground/60" />
             <Input
               id="leetcode"
               value={leetcodeUrl}
               onChange={(e) => setLeetcodeUrl(e.target.value)}
               placeholder="leetcode.com/u/yourusername"
-              className="h-10 pl-9"
+              className="h-11 pl-10 bg-background/80 border-border/80 focus-visible:ring-primary/45 rounded-lg text-sm"
               autoComplete="off"
             />
           </div>
@@ -88,14 +88,14 @@ export function ProfileForm() {
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="grid gap-2">
-            <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Target role</Label>
+            <Label className="text-[10px] font-bold uppercase tracking-wider text-foreground/80">Target role</Label>
             <Select value={role} onValueChange={(v) => setRole(v as RoleId)}>
-              <SelectTrigger className="w-full h-10">
+              <SelectTrigger className="w-full h-11 bg-background/80 border-border/80 focus:ring-primary/45 rounded-lg text-sm">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 {ROLE_LIST.map((r) => (
-                  <SelectItem key={r.id} value={r.id}>
+                  <SelectItem key={r.id} value={r.id} className="text-sm">
                     {r.label}
                   </SelectItem>
                 ))}
@@ -104,14 +104,14 @@ export function ProfileForm() {
           </div>
 
           <div className="grid gap-2">
-            <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Seniority</Label>
+            <Label className="text-[10px] font-bold uppercase tracking-wider text-foreground/80">Seniority</Label>
             <Select value={seniority} onValueChange={(v) => setSeniority(v as SeniorityId)}>
-              <SelectTrigger className="w-full h-10">
+              <SelectTrigger className="w-full h-11 bg-background/80 border-border/80 focus:ring-primary/45 rounded-lg text-sm">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 {SENIORITIES.map((s) => (
-                  <SelectItem key={s.id} value={s.id}>
+                  <SelectItem key={s.id} value={s.id} className="text-sm">
                     {s.label}
                   </SelectItem>
                 ))}
@@ -120,18 +120,23 @@ export function ProfileForm() {
           </div>
         </div>
 
-        <p className="text-xs leading-relaxed text-muted-foreground">
+        <div className="text-xs leading-relaxed text-foreground/85 bg-muted/40 border-l-2 border-primary/30 p-3 rounded-r font-medium">
           {ROLE_LIST.find((r) => r.id === role)?.description}
-        </p>
+        </div>
 
         {error ? (
-          <div className="flex items-start gap-2 rounded-lg border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
+          <div className="flex items-start gap-2.5 rounded-xl border border-destructive/30 bg-destructive/10 p-3.5 text-xs text-destructive font-medium shadow-sm">
             <AlertCircle className="mt-0.5 size-4 shrink-0" />
             <span>{error}</span>
           </div>
         ) : null}
 
-        <Button type="submit" size="lg" disabled={!canSubmit} className="mt-1 h-10 w-full font-medium transition-transform active:scale-[0.98]">
+        <Button
+          type="submit"
+          size="lg"
+          disabled={!canSubmit}
+          className="mt-2 h-11 w-full font-bold rounded-lg transition-all duration-200 hover:shadow-md hover:scale-[1.01] active:scale-[0.98]"
+        >
           {loading ? (
             <>
               <Loader2 className="size-4 animate-spin" />
@@ -142,7 +147,7 @@ export function ProfileForm() {
           )}
         </Button>
 
-        <p className="text-center text-xs text-muted-foreground">
+        <p className="text-center text-[10px] sm:text-xs font-semibold text-muted-foreground/80 leading-normal">
           Provide at least one profile. Data is fetched live from public APIs and never stored.
         </p>
       </div>
