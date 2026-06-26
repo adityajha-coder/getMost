@@ -111,4 +111,14 @@
   ::-webkit-scrollbar-thumb:hover {
     background: oklch(0.7 0.01 80);
   }
+
+  /* Dashboard section dividers */
+  .dash-section {
+    padding-top: 2rem;
+  }
+  .dash-section + .dash-section {
+    margin-top: 0.5rem;
+    border-top: 1px solid oklch(0.86 0.01 80 / 0.6);
+    padding-top: 2rem;
+  }
 }
