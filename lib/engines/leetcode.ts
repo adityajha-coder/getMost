@@ -22,7 +22,8 @@ query getUserProfile($username: String!) {
     username
     profile { ranking }
     submitStatsGlobal {
-      acSubmissionNum { difficulty count }
+      acSubmissionNum { difficulty count submissions }
+      totalSubmissionNum { difficulty count submissions }
     }
   }
   userContestRanking(username: $username) {
@@ -71,13 +72,29 @@ export async function analyzeLeetcode(rawInput?: string): Promise<LeetCodeSignal
     if (!matched) return { ...empty, error: "LeetCode user not found" }
 
     const ac = matched.submitStatsGlobal?.acSubmissionNum ?? []
-    const get = (d: string) =>
+    const totalSub = matched.submitStatsGlobal?.totalSubmissionNum ?? []
+
+    const getAc = (d: string) =>
       ac.find((x: { difficulty: string; count: number }) => x.difficulty === d)?.count ??
       0
-    const easySolved = get("Easy")
-    const mediumSolved = get("Medium")
-    const hardSolved = get("Hard")
+    const easySolved = getAc("Easy")
+    const mediumSolved = getAc("Medium")
+    const hardSolved = getAc("Hard")
     const totalSolved = easySolved + mediumSolved + hardSolved
+
+    const getAcSubmissions = (d: string) =>
+      ac.find((x: { difficulty: string; submissions: number }) => x.difficulty === d)?.submissions ??
+      0
+    const getTotalSubmissions = (d: string) =>
+      totalSub.find((x: { difficulty: string; submissions: number }) => x.difficulty === d)?.submissions ??
+      0
+
+    const acAllSubmissions = getAcSubmissions("All")
+    const totalAllSubmissions = getTotalSubmissions("All")
+
+    const acceptanceRate = totalAllSubmissions > 0
+      ? Math.round((acAllSubmissions / totalAllSubmissions) * 10000) / 100
+      : null
 
     const allCounts = json?.data?.allQuestionsCount ?? []
     const getAll = (d: string) =>
@@ -97,11 +114,6 @@ export async function analyzeLeetcode(rawInput?: string): Promise<LeetCodeSignal
     const contestsAttended = contestData?.attendedContestsCount ?? 0
 
     const difficultyWeightedScore = easySolved * 1 + mediumSolved * 3 + hardSolved * 7
-
-    const totalAvailableAll = totalAvailable.easy + totalAvailable.medium + totalAvailable.hard
-    const acceptanceRate = totalAvailableAll > 0
-      ? Math.round((totalSolved / totalAvailableAll) * 10000) / 100
-      : null
 
     return {
       username: matched.username ?? username,

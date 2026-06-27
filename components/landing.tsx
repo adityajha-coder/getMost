@@ -22,7 +22,7 @@ export function Landing() {
           <div className="mt-8 space-y-3.5">
             {[
               "Live GitHub & LeetCode profile analysis",
-              "Accurate scoring against 7 core engineering roles",
+              "Accurate scoring against 8 core engineering roles",
               "Actionable AI-powered improvement roadmap",
             ].map((text, idx) => (
               <div

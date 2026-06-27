@@ -228,7 +228,7 @@ export async function analyzeGithub(rawInput?: string): Promise<GitHubSignals> {
     const reposWithTests = original.filter(
       (r) =>
         (r.topics ?? []).some((t) => testKeywords.test(t)) ||
-        r.has_pages === false,
+        testKeywords.test(r.name ?? ""),
     ).length
 
     const pushDates = original.map((r) => new Date(r.pushed_at).getTime())

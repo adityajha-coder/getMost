@@ -1,6 +1,4 @@
-// Scoring engine — calibrated to produce accurate 0–100 ratings per position.
-// Each pillar is tuned so that baseline-level performance ≈ 50/100,
-// 2× baseline ≈ 75, and truly exceptional profiles reach 85–95.
+// Scoring engine: produces 0–100 ratings calibrated per position.
 
 import { ROLES } from "../roles"
 import type {
@@ -20,9 +18,7 @@ import {
   weightedAverage,
 } from "./scoring-utils"
 
-// ─────────────────────────────────────────────────────────────────────────────
 // LANGUAGE & TOPIC RELEVANCE
-// ─────────────────────────────────────────────────────────────────────────────
 
 function langRelevanceScore(gh: GitHubSignals, role: RoleId): number {
   const def = ROLES[role]
@@ -30,29 +26,29 @@ function langRelevanceScore(gh: GitHubSignals, role: RoleId): number {
   const userLangs = new Set(gh.topLanguages.map((l) => l.language.toLowerCase()))
   const userTopics = new Set(gh.topics.map((t) => t.toLowerCase()))
 
-  // Core language match — up to 100
+  // Core language score
   let langScore = 0
   const coreLangs = def.coreLanguages.map((l) => l.toLowerCase())
   for (const lang of coreLangs) {
     const depth = depthMap.get(lang)
     if (depth !== undefined) {
-      // Graduated scoring: heavy usage counts more
+      // Heavy usage counts more
       langScore += depth >= 30 ? 28 : depth >= 15 ? 22 : depth >= 5 ? 14 : 6
     } else if (userLangs.has(lang)) {
       langScore += 5
     }
   }
-  // Normalize against up to 4 core langs, each max 28 pts
+  // Normalize score
   langScore = Math.min(100, (langScore / Math.min(coreLangs.length, 4)) * (100 / 28))
 
-  // Secondary language bonus — up to 12
+  // Secondary language bonus
   const secondaryLangs = def.secondaryLanguages.map((l) => l.toLowerCase())
   const secondaryHits = secondaryLangs.filter(
     (l) => depthMap.has(l) || userLangs.has(l),
   ).length
   const secondaryBonus = Math.min(12, secondaryHits * 4)
 
-  // Topic relevance — up to 100
+  // Topic relevance score
   const coreTopics = def.coreTopics.map((t) => t.toLowerCase())
   const topicHits = coreTopics.filter((t) =>
     [...userTopics].some((ut) => ut.includes(t)),
@@ -65,9 +61,7 @@ function langRelevanceScore(gh: GitHubSignals, role: RoleId): number {
   return clamp(langScore * 0.5 + topicScore * 0.35 + secondaryBonus)
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
 // PILLAR 1: CODE & PROJECTS
-// ─────────────────────────────────────────────────────────────────────────────
 
 function codeScore(
   gh: GitHubSignals,
@@ -81,16 +75,16 @@ function codeScore(
   const doc = gh.documentationScore
   const originality = clamp(gh.originalRepoRatio * 110)
 
-  // Seniority-aware volume — uses repoBaseline instead of flat 25
+  // Seniority-aware repo volume
   const repoBaseline = def.repoBaseline[seniority]
   const volume = diminishingReturns(gh.publicRepos, repoBaseline)
 
-  // Community reach — raised half-point from 50 → 100
+  // Community reach
   const reach = logarithmicScale(gh.totalStars, 100)
 
-  // Testing maturity — what fraction of repos include tests
+  // Testing maturity
   const testRatio = gh.publicRepos > 0 ? gh.reposWithTests / gh.publicRepos : 0
-  const testingScore = clamp(testRatio * 120) // max 100 at 83%+ repos with tests
+  const testingScore = clamp(testRatio * 120)
 
   const score = weightedAverage([
     { value: relevance, weight: 0.30 },
@@ -111,9 +105,7 @@ function codeScore(
   return { score, detail }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
 // PILLAR 2: PROBLEM SOLVING (DSA)
-// ─────────────────────────────────────────────────────────────────────────────
 
 function dsaScore(
   lc: LeetCodeSignals,
@@ -124,10 +116,10 @@ function dsaScore(
 
   const baseline = ROLES[role].dsaBaseline[seniority]
 
-  // Volume with calibrated diminishing returns
+  // Diminishing returns volume
   const volume = diminishingReturns(lc.totalSolved, baseline)
 
-  // Volume floor — fewer than 10 problems is insufficient evidence
+  // Require at least 10 solved problems
   if (lc.totalSolved < 10) {
     const cappedScore = clamp(Math.min(15, lc.totalSolved * 1.5))
     const detail = `Only ${lc.totalSolved} solved — insufficient for reliable assessment. `
@@ -135,37 +127,37 @@ function dsaScore(
     return { score: cappedScore, detail }
   }
 
-  // Difficulty distribution analysis
+  // Difficulty distribution
   const mhRatio = (lc.mediumSolved + lc.hardSolved) / lc.totalSolved
-  const hardPremium = lc.hardRatio * 120 // up to ~36 for 30% hard ratio
+  const hardPremium = lc.hardRatio * 120
   const difficulty = clamp(mhRatio * 55 + hardPremium)
 
-  // Depth balance — penalize easy-heavy profiles
+  // Depth balance
   const easyRatio = lc.easySolved / lc.totalSolved
   const depthBalance = clamp(
-    easyRatio > 0.8 ? 15     // overwhelmingly easy — very low
-      : easyRatio > 0.65 ? 40 // easy-heavy
-        : easyRatio > 0.45 ? 65 // balanced
-          : 85                    // medium/hard focused
+    easyRatio > 0.8 ? 15
+      : easyRatio > 0.65 ? 40
+        : easyRatio > 0.45 ? 65
+          : 85
   )
 
-  // Contest performance — default lowered from 50 → 30 when no data
+  // Contest performance
   let contest = 30
   const contestBaseline = ROLES[role].contestBaseline[seniority]
   if (lc.contestRating !== null && contestBaseline !== null) {
-    // Scale contest rating relative to baseline, with floor at 1200
+    // Scale rating relative to baseline
     const ratingSpread = contestBaseline - 1200
     if (ratingSpread > 0) {
       contest = clamp(((lc.contestRating - 1200) / ratingSpread) * 70)
     }
-    // Tiered bonus for exceptional ratings
+    // Tiered rating bonus
     contest = clamp(contest + tieredBonus(lc.contestRating, [
       [1800, 8],
       [2000, 10],
       [2200, 7],
     ]))
   } else if (lc.contestsAttended > 0) {
-    // Participated but no rating — partial credit
+    // Participation credit
     contest = clamp(25 + Math.min(20, lc.contestsAttended * 2.5))
   }
 
@@ -189,9 +181,7 @@ function dsaScore(
   return { score, detail }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
 // PILLAR 3: CONSISTENCY & ACTIVITY
-// ─────────────────────────────────────────────────────────────────────────────
 
 function consistencyScore(gh: GitHubSignals): { score: number; detail: string } {
   if (!gh.found) return { score: 0, detail: "No activity data." }
@@ -201,7 +191,7 @@ function consistencyScore(gh: GitHubSignals): { score: number; detail: string } 
   const yearlyBreadth = clamp(diminishingReturns(gh.activeReposLast365Days, 10, 1.6))
   const maturity = clamp(diminishingReturns(gh.accountAgeYears, 3, 1.6))
 
-  // Streak penalty — zero activity in 90 days caps the score
+  // Cap score if no recent activity
   const hasRecentActivity = gh.activeReposLast90Days > 0
 
   let score = weightedAverage([
@@ -211,7 +201,6 @@ function consistencyScore(gh: GitHubSignals): { score: number; detail: string } 
     { value: maturity, weight: 0.20 },
   ])
 
-  // Cap at 25 if no repos were active in the last 90 days
   if (!hasRecentActivity) {
     score = Math.min(score, 25)
   }
@@ -232,20 +221,17 @@ function consistencyScore(gh: GitHubSignals): { score: number; detail: string } 
   return { score, detail }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
 // PILLAR 4: IMPACT & REACH
-// ─────────────────────────────────────────────────────────────────────────────
 
 function impactScore(gh: GitHubSignals): { score: number; detail: string } {
   if (!gh.found) return { score: 0, detail: "No data." }
 
-  // Raised half-points for realistic thresholds
-  const stars = logarithmicScale(gh.totalStars, 100)       // was 50
-  const followers = logarithmicScale(gh.followers, 80)      // was 30
-  const collaboration = logarithmicScale(gh.forksReceived, 25) // was 10
+  const stars = logarithmicScale(gh.totalStars, 100)
+  const followers = logarithmicScale(gh.followers, 80)
+  const collaboration = logarithmicScale(gh.forksReceived, 25)
   const original = clamp(gh.originalRepoRatio * 100)
 
-  // Notable repo bonus — graduated by star count of best repo
+  // Notable repo bonus
   const maxRepoStars = gh.notableRepos.length > 0
     ? Math.max(...gh.notableRepos.map((r) => r.stars))
     : 0
@@ -275,9 +261,7 @@ function impactScore(gh: GitHubSignals): { score: number; detail: string } {
   return { score, detail }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
 // PILLAR ASSEMBLY
-// ─────────────────────────────────────────────────────────────────────────────
 
 export function buildPillars(
   gh: GitHubSignals,
@@ -299,9 +283,7 @@ export function buildPillars(
   ]
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
 // OVERALL SCORE — with dynamic weight redistribution & single-platform cap
-// ─────────────────────────────────────────────────────────────────────────────
 
 export function overallFromPillars(
   pillars: PillarScore[],
@@ -312,23 +294,20 @@ export function overallFromPillars(
   const lcAvailable = lc.found
   const bothAvailable = ghAvailable && lcAvailable
 
-  // Dynamic weight redistribution: when a platform is missing, redistribute
-  // its pillar weights proportionally to available pillars instead of penalizing with 0.
+  // Redistribute weights if a platform is missing
   let effectivePillars = pillars
 
   if (!ghAvailable && lcAvailable) {
-    // Only LeetCode available — redistribute code, consistency, impact weights to DSA
     const dsaPillar = pillars.find((p) => p.key === "dsa")
     if (dsaPillar) {
       effectivePillars = [{ ...dsaPillar, weight: 1.0 }]
     }
   } else if (ghAvailable && !lcAvailable) {
-    // Only GitHub available — redistribute DSA weight to code, consistency, impact
     const ghPillars = pillars.filter((p) => p.key !== "dsa")
     const totalGhWeight = ghPillars.reduce((acc, p) => acc + p.weight, 0)
     effectivePillars = ghPillars.map((p) => ({
       ...p,
-      weight: p.weight / totalGhWeight, // normalize to sum to 1.0
+      weight: p.weight / totalGhWeight,
     }))
   }
 
@@ -336,7 +315,7 @@ export function overallFromPillars(
   const weighted = effectivePillars.reduce((acc, p) => acc + p.score * p.weight, 0)
   let base = clamp(weighted / totalWeight)
 
-  // Synergy bonus — reduced from +4/+4 to +2/+3
+  // Synergy bonus
   if (bothAvailable) {
     const codeP = pillars.find((p) => p.key === "code")
     const dsaP = pillars.find((p) => p.key === "dsa")
@@ -348,7 +327,6 @@ export function overallFromPillars(
     }
   }
 
-  // Single-platform cap — incomplete data should not yield a top score
   if (!bothAvailable) {
     base = Math.min(base, 75)
   }
@@ -356,9 +334,7 @@ export function overallFromPillars(
   return base
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
 // READINESS LABELS & RADAR
-// ─────────────────────────────────────────────────────────────────────────────
 
 export function readinessLabel(score: number) {
   if (score >= 80) return "Job Ready" as const
@@ -378,9 +354,7 @@ export function buildRadar(pillars: PillarScore[], seniority: SeniorityId) {
   return pillars.map((p) => ({ axis: p.label, you: p.score, target }))
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
 // SKILL MATCH DETECTION
-// ─────────────────────────────────────────────────────────────────────────────
 
 export function buildSkillMatches(gh: GitHubSignals, role: RoleId): SkillMatch[] {
   const def = ROLES[role]
