@@ -1,5 +1,7 @@
 "use client"
 
+import { useState, useEffect } from "react"
+import { Sun, Moon } from "lucide-react"
 import { useAppDispatch, useAppSelector } from "@/store/hooks"
 import { resetAnalysis, setView } from "@/store/analysisSlice"
 import { Button } from "@/components/ui/button"
@@ -8,6 +10,25 @@ import { GithubMark } from "@/components/brand-icons"
 export function SiteHeader() {
   const dispatch = useAppDispatch()
   const view = useAppSelector((s) => s.analysis.view)
+  const [theme, setTheme] = useState<"light" | "dark">("light")
+
+  useEffect(() => {
+    const isDark = document.documentElement.classList.contains("dark")
+    setTheme(isDark ? "dark" : "light")
+  }, [])
+
+  const toggleTheme = () => {
+    const isDark = document.documentElement.classList.contains("dark")
+    if (isDark) {
+      document.documentElement.classList.remove("dark")
+      localStorage.theme = "light"
+      setTheme("light")
+    } else {
+      document.documentElement.classList.add("dark")
+      localStorage.theme = "dark"
+      setTheme("dark")
+    }
+  }
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur-xl">
@@ -34,6 +55,15 @@ export function SiteHeader() {
               </Button>
             </>
           )}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleTheme}
+            className="text-muted-foreground hover:text-foreground flex items-center justify-center"
+            aria-label="Toggle theme"
+          >
+            {theme === "dark" ? <Sun className="size-5" /> : <Moon className="size-5" />}
+          </Button>
           <a
             href="https://github.com/adityajha-coder/getMost"
             target="_blank"
