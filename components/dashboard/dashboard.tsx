@@ -61,7 +61,7 @@ function SkillRow({ s }: { s: SkillMatch }) {
   )
 }
 
-/* ─── Section heading helper ─── */
+/*  Section heading helper  */
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
     <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">
@@ -84,7 +84,7 @@ export function Dashboard({ result }: { result: AnalysisResult }) {
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
 
-      {/* ═══════════ SECTION 1 — OVERVIEW ═══════════ */}
+      {/*  SECTION 1 — OVERVIEW  */}
       <div className="dash-section">
         {/* Hero: Score + Verdict */}
         <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between border-b border-border/40 pb-6">
@@ -211,7 +211,7 @@ export function Dashboard({ result }: { result: AnalysisResult }) {
         </div>
       </div>
 
-      {/* ═══════════ SECTION 2 — PLATFORM SIGNALS ═══════════ */}
+      {/*  SECTION 2 — PLATFORM SIGNALS  */}
       {(github.found || leetcode.found) && (
         <div className="dash-section">
           <SectionLabel>Platform Signals</SectionLabel>
@@ -278,7 +278,7 @@ export function Dashboard({ result }: { result: AnalysisResult }) {
         </div>
       )}
 
-      {/* ═══════════ SECTION 3 — AI INSIGHTS ═══════════ */}
+      {/*  SECTION 3 — AI INSIGHTS  */}
       <div className="dash-section">
         <SectionLabel>AI Insights</SectionLabel>
 
@@ -485,7 +485,7 @@ export function Dashboard({ result }: { result: AnalysisResult }) {
   )
 }
 
-/* ─── Extracted tab content component to reduce repetition ─── */
+/*  Extracted tab content component to reduce repetition  */
 function PillarTab({
   title,
   overview,
