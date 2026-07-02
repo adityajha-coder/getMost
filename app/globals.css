@@ -89,7 +89,7 @@
 .dark {
   color-scheme: dark;
   --background: oklch(0.16 0.012 250);
-  --foreground: oklch(0.95 0.008 250);
+  --foreground: oklch(0.97 0.012 80);
   --card: oklch(0.18 0.014 250);
   --card-foreground: oklch(0.95 0.008 250);
   --popover: oklch(0.18 0.014 250);
