@@ -7,6 +7,22 @@ import { resetAnalysis, setView } from "@/store/analysisSlice"
 import { Button } from "@/components/ui/button"
 import { GithubMark } from "@/components/brand-icons"
 
+const faviconForTheme = (theme: "light" | "dark") => (theme === "dark" ? "/light.png" : "/dark.png")
+
+function setFavicon(theme: "light" | "dark") {
+  const href = faviconForTheme(theme)
+  let icon = document.querySelector<HTMLLinkElement>("link[rel~='icon']")
+
+  if (!icon) {
+    icon = document.createElement("link")
+    icon.rel = "icon"
+    document.head.appendChild(icon)
+  }
+
+  icon.type = "image/png"
+  icon.href = href
+}
+
 export function SiteHeader() {
   const dispatch = useAppDispatch()
   const view = useAppSelector((s) => s.analysis.view)
@@ -14,7 +30,9 @@ export function SiteHeader() {
 
   useEffect(() => {
     const isDark = document.documentElement.classList.contains("dark")
-    setTheme(isDark ? "dark" : "light")
+    const currentTheme = isDark ? "dark" : "light"
+    setTheme(currentTheme)
+    setFavicon(currentTheme)
   }, [])
 
   const toggleTheme = () => {
@@ -23,10 +41,12 @@ export function SiteHeader() {
       document.documentElement.classList.remove("dark")
       localStorage.theme = "light"
       setTheme("light")
+      setFavicon("light")
     } else {
       document.documentElement.classList.add("dark")
       localStorage.theme = "dark"
       setTheme("dark")
+      setFavicon("dark")
     }
   }
 
@@ -38,7 +58,7 @@ export function SiteHeader() {
           onClick={() => dispatch(resetAnalysis())}
           className="flex items-center gap-2 transition-opacity hover:opacity-90"
         >
-          <img src="/fevicon.png" alt="Logo" className="h-8 w-auto object-contain" />
+          <img src={faviconForTheme(theme)} alt="Logo" className="h-8 w-auto object-contain" />
           <span className="text-lg font-bold tracking-tight text-foreground select-none">
             get<span className="font-medium text-muted-foreground">Most</span>
           </span>

@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     'getMost analyzes your GitHub and LeetCode profiles against a target engineering role and tells you exactly how ready you are and what to improve.',
   generator: 'v0.app',
   icons: {
-    icon: '/fevicon.png',
+    icon: '/dark.png',
   },
 }
 
@@ -41,11 +41,8 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `
               try {
-                if (localStorage.theme === 'dark') {
-                  document.documentElement.classList.add('dark');
-                } else {
-                  document.documentElement.classList.remove('dark');
-                }
+                localStorage.theme = 'light';
+                document.documentElement.classList.remove('dark');
               } catch (_) {}
             `,
           }}

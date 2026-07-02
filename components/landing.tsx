@@ -4,7 +4,7 @@ import { ProfileForm } from "./profile-form"
 
 export function Landing() {
   return (
-    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-[linear-gradient(to_right,rgba(0,0,0,0.035)_1px,transparent_1px),linear-gradient(to_bottom,rgba(0,0,0,0.035)_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:32px_32px] flex items-center">
+    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-[linear-gradient(to_right,rgba(0,0,0,0.035)_1px,transparent_1px),linear-gradient(to_bottom,rgba(0,0,0,0.035)_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-size[32px_32px] flex items-center">
       {/* Decorative gradient radial blurs */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_30%,var(--background)_100%)] pointer-events-none" />
       <div className="absolute top-1/4 left-1/4 -z-10 size-96 rounded-full bg-primary/5 blur-3xl pointer-events-none animate-pulse" />
